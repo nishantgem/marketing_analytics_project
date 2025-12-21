@@ -1,7 +1,7 @@
 {{ config(materialized='view') }}
 
 select
-    cast(date as date) as date,
+    to_timestamp(date / 1000000000)::date as date,
     'meta_non_mx' as platform,
 
     media_channel_ch,
