@@ -19,22 +19,3 @@ Reusable SQL/dbt models for analytics engineering
 
 Python notebooks for exploratory analysis and forecasting
 
-
-
-marketing_project/
-└── models/
-    ├── staging/
-    │   └── social/
-    │       ├── sources.yml
-    │       ├── stg_pinterest.sql
-    │       ├── stg_reddit.sql
-    │       ├── stg_meta_mx.sql
-    │       └── stg_meta_non_mx.sql
-    │
-    ├── prep/
-    │   └── prep_unified_social_metrics.sql
-    │
-    └── mart/
-        └── fact_marketing_performance.sql
-
-
