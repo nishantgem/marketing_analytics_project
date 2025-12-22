@@ -2,7 +2,7 @@
 
 select
     -- Python already converted date
-    date::date as date,
+    date as date,
 
     -- Platform identifier
     'reddit' as platform,

@@ -2,7 +2,7 @@
 
 select
     -- Python already converted date, so just cast to date
-    date::date as date,
+    date as date,
 
     -- Platform identifier
     'meta_non_mx' as platform,
