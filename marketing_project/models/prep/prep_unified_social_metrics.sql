@@ -57,4 +57,4 @@ unified as (
         p.total_conversion_revenue_usd as pinterest_revenue_usd,
 
         -- Reddit metrics
-        r.cost_us
+        r.cost_us)
