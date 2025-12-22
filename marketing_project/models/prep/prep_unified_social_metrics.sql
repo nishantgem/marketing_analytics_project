@@ -23,9 +23,7 @@ unified as (
         coalesce(mx.campaign_id, mn.campaign_id, p.campaign_id, r.campaign_id) as campaign_id,
 
         -- FIXED: Convert nanoseconds → seconds → timestamp → date (Postgres)
-        to_timestamp(
-            coalesce(mx.date, mn.date, p.date, r.date) / 1000000000
-        )::date as date,
+        coalesce(mx.date, mn.date, p.date, r.date)::date as date,
 
         -- Core metadata (from your column list)
         coalesce(mx.platform, mn.platform, p.platform, r.platform) as platform,
