@@ -2,38 +2,119 @@
 
 select
     date,
-    platform,
+    campaign_id,
 
-    sum(costs) as total_spend,
-    sum(cost_usd) as total_spend_usd,
+    -- Total Spend (USD)
+    coalesce(meta_mx_cost_usd, 0)
+    + coalesce(meta_non_mx_cost_usd, 0)
+    + coalesce(pinterest_cost_usd, 0)
+    + coalesce(reddit_cost_usd, 0) as total_spend_usd,
 
-    sum(impressions) as total_impressions,
-    sum(clicks) as total_clicks,
+    -- Total Impressions
+    coalesce(meta_mx_impressions, 0)
+    + coalesce(meta_non_mx_impressions, 0)
+    + coalesce(pinterest_impressions, 0)
+    + coalesce(reddit_impressions, 0) as total_impressions,
 
-    sum(total_conversions) as total_conversions,
-    sum(total_conversion_revenue) as total_revenue,
-    sum(total_conversion_revenue_usd) as total_revenue_usd,
+    -- Total Clicks
+    coalesce(meta_mx_clicks, 0)
+    + coalesce(meta_non_mx_clicks, 0)
+    + coalesce(pinterest_clicks, 0)
+    + coalesce(reddit_clicks, 0) as total_clicks,
 
-    -- Metrics
-    case when sum(costs) = 0 then null
-         else sum(total_conversion_revenue) / sum(costs)
-    end as roas,
+    -- Total Conversions
+    coalesce(meta_mx_conversions, 0)
+    + coalesce(meta_non_mx_conversions, 0)
+    + coalesce(pinterest_conversions, 0)
+    + coalesce(null, 0) as total_conversions,
 
-    case when sum(cost_usd) = 0 then null
-         else sum(total_conversion_revenue_usd) / sum(cost_usd)
+    -- Total Revenue (USD)
+    coalesce(meta_mx_revenue_usd, 0)
+    + coalesce(meta_non_mx_revenue_usd, 0)
+    + coalesce(pinterest_revenue_usd, 0)
+    + coalesce(null, 0) as total_revenue_usd,
+
+    -- ROAS (Revenue / Spend)
+    case 
+        when (
+            coalesce(meta_mx_cost_usd, 0)
+            + coalesce(meta_non_mx_cost_usd, 0)
+            + coalesce(pinterest_cost_usd, 0)
+            + coalesce(reddit_cost_usd, 0)
+        ) = 0 then null
+        else (
+            coalesce(meta_mx_revenue_usd, 0)
+            + coalesce(meta_non_mx_revenue_usd, 0)
+            + coalesce(pinterest_revenue_usd, 0)
+        ) / (
+            coalesce(meta_mx_cost_usd, 0)
+            + coalesce(meta_non_mx_cost_usd, 0)
+            + coalesce(pinterest_cost_usd, 0)
+            + coalesce(reddit_cost_usd, 0)
+        )
     end as roas_usd,
 
-    case when sum(impressions) = 0 then null
-         else sum(clicks) * 1.0 / sum(impressions)
+    -- CTR (Clicks / Impressions)
+    case 
+        when (
+            coalesce(meta_mx_impressions, 0)
+            + coalesce(meta_non_mx_impressions, 0)
+            + coalesce(pinterest_impressions, 0)
+            + coalesce(reddit_impressions, 0)
+        ) = 0 then null
+        else (
+            coalesce(meta_mx_clicks, 0)
+            + coalesce(meta_non_mx_clicks, 0)
+            + coalesce(pinterest_clicks, 0)
+            + coalesce(reddit_clicks, 0)
+        ) * 1.0 / (
+            coalesce(meta_mx_impressions, 0)
+            + coalesce(meta_non_mx_impressions, 0)
+            + coalesce(pinterest_impressions, 0)
+            + coalesce(reddit_impressions, 0)
+        )
     end as ctr,
 
-    case when sum(clicks) = 0 then null
-         else sum(costs) / sum(clicks)
-    end as cpc,
+    -- CPC (Cost / Clicks)
+    case 
+        when (
+            coalesce(meta_mx_clicks, 0)
+            + coalesce(meta_non_mx_clicks, 0)
+            + coalesce(pinterest_clicks, 0)
+            + coalesce(reddit_clicks, 0)
+        ) = 0 then null
+        else (
+            coalesce(meta_mx_cost_usd, 0)
+            + coalesce(meta_non_mx_cost_usd, 0)
+            + coalesce(pinterest_cost_usd, 0)
+            + coalesce(reddit_cost_usd, 0)
+        ) / (
+            coalesce(meta_mx_clicks, 0)
+            + coalesce(meta_non_mx_clicks, 0)
+            + coalesce(pinterest_clicks, 0)
+            + coalesce(reddit_clicks, 0)
+        )
+    end as cpc_usd,
 
-    case when sum(impressions) = 0 then null
-         else (sum(costs) * 1000.0) / sum(impressions)
-    end as cpm
+    -- CPM (Cost per 1000 impressions)
+    case 
+        when (
+            coalesce(meta_mx_impressions, 0)
+            + coalesce(meta_non_mx_impressions, 0)
+            + coalesce(pinterest_impressions, 0)
+            + coalesce(reddit_impressions, 0)
+        ) = 0 then null
+        else (
+            coalesce(meta_mx_cost_usd, 0)
+            + coalesce(meta_non_mx_cost_usd, 0)
+            + coalesce(pinterest_cost_usd, 0)
+            + coalesce(reddit_cost_usd, 0)
+        ) * 1000.0 / (
+            coalesce(meta_mx_impressions, 0)
+            + coalesce(meta_non_mx_impressions, 0)
+            + coalesce(pinterest_impressions, 0)
+            + coalesce(reddit_impressions, 0)
+        )
+    end as cpm_usd
 
 from {{ ref('prep_unified_social_metrics') }}
-group by 1, 2
