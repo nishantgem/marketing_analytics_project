@@ -3,6 +3,7 @@ Marketing data modeling and integration
 
 
 📌 Overview
+
 This repository contains an end‑to‑end marketing analytics workflow, including data ingestion, transformation, modeling, and visualization. The goal is to build a scalable analytics foundation for understanding marketing performance, customer acquisition efficiency, and long‑term customer value.
 
 The project includes:
